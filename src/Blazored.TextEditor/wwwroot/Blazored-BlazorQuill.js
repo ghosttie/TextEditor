@@ -1,56 +1,63 @@
-﻿(function () {
-    window.QuillFunctions = {        
-        createQuill: function (
-            quillElement, toolBar, readOnly,
-            placeholder, theme, debugLevel) {  
+﻿(function() {
+	window.QuillFunctions = {
+		createQuill: function(quillElement, toolBar, readOnly, placeholder, theme, debugLevel, historyModule, historyDelay, historyMaxStack, historyUserOnly) {
+			Quill.register('modules/blotFormatter', QuillBlotFormatter.default);
 
-            Quill.register('modules/blotFormatter', QuillBlotFormatter.default);
+			var modules = {
+				toolbar: toolBar,
+				blotFormatter: {}
+			};
 
-            var options = {
-                debug: debugLevel,
-                modules: {
-                    toolbar: toolBar,
-                    blotFormatter: {}
-                },
-                placeholder: placeholder,
-                readOnly: readOnly,
-                theme: theme
-            };
+			if (historyModule) {
+				modules.history = {
+					delay: historyDelay,
+					maxStack: historyMaxStack,
+					userOnly: historyUserOnly
+				};
+			}
 
-            new Quill(quillElement, options);
-        },
-        getQuillContent: function(quillElement) {
-            return JSON.stringify(quillElement.__quill.getContents());
-        },
-        getQuillText: function(quillElement) {
-            return quillElement.__quill.getText();
-        },
-        getQuillHTML: function(quillElement) {
-            return quillElement.__quill.root.innerHTML;
-        },
-        loadQuillContent: function(quillElement, quillContent) {
-            content = JSON.parse(quillContent);
-            return quillElement.__quill.setContents(content, 'api');
-        },
-        loadQuillHTMLContent: function (quillElement, quillHTMLContent) {
-            return quillElement.__quill.root.innerHTML = quillHTMLContent;
-        },
-        enableQuillEditor: function (quillElement, mode) {
-            quillElement.__quill.enable(mode);
-        },
-        insertQuillImage: function (quillElement, imageURL) {
-            var Delta = Quill.import('delta');
-            editorIndex = 0;
+			var options = {
+				debug: debugLevel,
+				modules: modules,
+				placeholder: placeholder,
+				readOnly: readOnly,
+				theme: theme
+			};
 
-            if (quillElement.__quill.getSelection() !== null) {
-                editorIndex = quillElement.__quill.getSelection().index;
-            }
+			new Quill(quillElement, options);
+		},
+		getQuillContent: function(quillElement) {
+			return JSON.stringify(quillElement.__quill.getContents());
+		},
+		getQuillText: function(quillElement) {
+			return quillElement.__quill.getText();
+		},
+		getQuillHTML: function(quillElement) {
+			return quillElement.__quill.root.innerHTML;
+		},
+		loadQuillContent: function(quillElement, quillContent) {
+			content = JSON.parse(quillContent);
+			return quillElement.__quill.setContents(content, 'api');
+		},
+		loadQuillHTMLContent: function(quillElement, quillHTMLContent) {
+			return quillElement.__quill.root.innerHTML = quillHTMLContent;
+		},
+		enableQuillEditor: function(quillElement, mode) {
+			quillElement.__quill.enable(mode);
+		},
+		insertQuillImage: function(quillElement, imageURL) {
+			var Delta = Quill.import('delta');
+			editorIndex = 0;
 
-            return quillElement.__quill.updateContents(
-                new Delta()
-                    .retain(editorIndex)
-                    .insert({ image: imageURL },
-                        { alt: imageURL }));
-        }
-    };
+			if (quillElement.__quill.getSelection() !== null) {
+				editorIndex = quillElement.__quill.getSelection().index;
+			}
+
+			return quillElement.__quill.updateContents(
+				new Delta()
+					.retain(editorIndex)
+					.insert({ image: imageURL },
+						{ alt: imageURL }));
+		}
+	};
 })();
