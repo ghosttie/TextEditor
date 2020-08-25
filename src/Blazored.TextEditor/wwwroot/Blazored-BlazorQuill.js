@@ -1,11 +1,12 @@
 ﻿(function() {
 	window.QuillFunctions = {
-		createQuill: function(quillElement, toolBar, readOnly, placeholder, theme, debugLevel, historyModule, historyDelay, historyMaxStack, historyUserOnly) {
+		createQuill: function(quillElement, toolBar, readOnly, placeholder, theme, debugLevel, historyModule, historyDelay, historyMaxStack, historyUserOnly, syntaxModule) {
 			Quill.register('modules/blotFormatter', QuillBlotFormatter.default);
 
 			var modules = {
 				toolbar: toolBar,
-				blotFormatter: {}
+				blotFormatter: {},
+				syntax: syntaxModule
 			};
 
 			if (historyModule) {
