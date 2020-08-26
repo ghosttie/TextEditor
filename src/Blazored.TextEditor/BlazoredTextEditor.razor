@@ -41,6 +41,9 @@
 	[Parameter]
 	public bool EnableSyntaxModule { get; set; } = false;
 
+	[Parameter]
+	public bool EnableTooltips { get; set; } = false;
+
 	private ElementReference QuillElement;
 	private ElementReference ToolBar;
 
@@ -58,7 +61,8 @@
 				HistoryDelay,
 				HistoryMaxStack,
 				HistoryUserOnly,
-				EnableSyntaxModule
+				EnableSyntaxModule,
+				EnableTooltips
 			);
 		}
 	}

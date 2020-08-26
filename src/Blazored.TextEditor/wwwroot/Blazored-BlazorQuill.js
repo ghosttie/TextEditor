@@ -1,6 +1,6 @@
 ﻿(function() {
 	window.QuillFunctions = {
-		createQuill: function(quillElement, toolBar, readOnly, placeholder, theme, debugLevel, historyModule, historyDelay, historyMaxStack, historyUserOnly, syntaxModule) {
+		createQuill: function(quillElement, toolBar, readOnly, placeholder, theme, debugLevel, historyModule, historyDelay, historyMaxStack, historyUserOnly, syntaxModule, tooltips) {
 			Quill.register('modules/blotFormatter', QuillBlotFormatter.default);
 
 			var modules = {
@@ -26,6 +26,10 @@
 			};
 
 			new Quill(quillElement, options);
+
+			if (tooltips) {
+				$('[data-toggle="tooltip"]').tooltip();
+			}
 		},
 		getQuillContent: function(quillElement) {
 			return JSON.stringify(quillElement.__quill.getContents());
