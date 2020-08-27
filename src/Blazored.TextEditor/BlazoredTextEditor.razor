@@ -44,11 +44,19 @@
 	[Parameter]
 	public bool EnableTooltips { get; set; } = false;
 
+	[Parameter]
+	public EventCallback OnTextChange { get; set; }
+
 	private ElementReference QuillElement;
 	private ElementReference ToolBar;
 
 	protected override async Task OnAfterRenderAsync(bool firstRender) {
 		if (firstRender) {
+			DotNetObjectReference<BlazoredTextEditor> reference = null;
+			if (OnTextChange.HasDelegate) {
+				reference = DotNetObjectReference.Create(this);
+			}
+
 			await Interop.CreateQuill(
 				JSRuntime,
 				QuillElement,
@@ -62,7 +70,9 @@
 				HistoryMaxStack,
 				HistoryUserOnly,
 				EnableSyntaxModule,
-				EnableTooltips
+				EnableTooltips,
+				reference,
+				nameof(OnTextChangeCallback)
 			);
 		}
 	}
@@ -93,5 +103,10 @@
 
 	public async Task EnableEditor(bool mode) {
 		var QuillDelta = await Interop.EnableQuillEditor(JSRuntime, QuillElement, mode);
+	}
+
+	[JSInvokable]
+	public async Task OnTextChangeCallback() {
+		await OnTextChange.InvokeAsync(null);
 	}
 }

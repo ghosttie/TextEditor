@@ -17,7 +17,9 @@ namespace Blazored.TextEditor {
 			int historyMaxStack,
 			bool historyUserOnly,
 			bool syntaxModule,
-			bool tooltips
+			bool tooltips,
+			DotNetObjectReference<BlazoredTextEditor> OnTextChangeReference,
+			string OnTextChangeMethod
 		) {
 			return jsRuntime.InvokeAsync<object>(
 				"QuillFunctions.createQuill",
@@ -32,7 +34,9 @@ namespace Blazored.TextEditor {
 				historyMaxStack,
 				historyUserOnly,
 				syntaxModule,
-				tooltips
+				tooltips,
+				OnTextChangeReference,
+				OnTextChangeMethod
 			);
 		}
 
