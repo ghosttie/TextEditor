@@ -33,7 +33,14 @@
 
 			if (OnTextChangeReference) {
 				quill.on('text-change', async function(delta, oldDelta, source) {
-					await OnTextChangeReference.invokeMethodAsync(OnTextChangeMethod)
+					await OnTextChangeReference.invokeMethodAsync(
+						OnTextChangeMethod,
+						{
+							Delta: JSON.stringify(delta),
+							OldDelta: JSON.stringify(oldDelta),
+							Source: source
+						}
+					)
 				});
 			}
 		},

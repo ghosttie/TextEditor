@@ -45,7 +45,7 @@
 	public bool EnableTooltips { get; set; } = false;
 
 	[Parameter]
-	public EventCallback OnTextChange { get; set; }
+	public EventCallback<TextChangeEventArgs> OnTextChange { get; set; }
 
 	private ElementReference QuillElement;
 	private ElementReference ToolBar;
@@ -106,7 +106,7 @@
 	}
 
 	[JSInvokable]
-	public async Task OnTextChangeCallback() {
-		await OnTextChange.InvokeAsync(null);
+	public async Task OnTextChangeCallback(TextChangeEventArgs args) {
+		await OnTextChange.InvokeAsync(args);
 	}
 }
