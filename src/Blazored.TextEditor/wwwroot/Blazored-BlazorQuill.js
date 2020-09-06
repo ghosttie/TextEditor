@@ -1,4 +1,6 @@
-﻿(function() {
+﻿/* global Quill, QuillBlotFormatter */
+
+(function() {
 	window.QuillFunctions = {
 		createQuill: function(
 			quillElement,
@@ -58,7 +60,7 @@
 				quill.on('text-change', async function(delta, oldDelta, source) {
 					if (onTextChangeMethod) {
 						await editorReference.invokeMethodAsync(
-							OnTextChangeMethod,
+							onTextChangeMethod,
 							{
 								Delta: JSON.stringify(delta),
 								OldDelta: JSON.stringify(oldDelta),
@@ -68,8 +70,10 @@
 					}
 
 					if (onDeltaMethod) {
-						// Store accumulated changes
-						currentChanges = currentChanges.compose(delta);
+						if (source === 'user') {
+							// Store accumulated changes
+							currentChanges = currentChanges.compose(delta);
+						}
 					}
 				});
 
@@ -114,7 +118,7 @@
 			return quillElement.__quill.root.innerHTML;
 		},
 		loadQuillContent: function(quillElement, quillContent) {
-			content = JSON.parse(quillContent);
+			var content = JSON.parse(quillContent);
 			return quillElement.__quill.setContents(content, 'api');
 		},
 		loadQuillHTMLContent: function(quillElement, quillHTMLContent) {
@@ -125,7 +129,7 @@
 		},
 		insertQuillImage: function(quillElement, imageURL) {
 			var Delta = Quill.import('delta');
-			editorIndex = 0;
+			var editorIndex = 0;
 
 			if (quillElement.__quill.getSelection() !== null) {
 				editorIndex = quillElement.__quill.getSelection().index;
