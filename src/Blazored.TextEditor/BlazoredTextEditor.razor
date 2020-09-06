@@ -47,13 +47,19 @@
 	[Parameter]
 	public EventCallback<TextChangeEventArgs> OnTextChange { get; set; }
 
+	[Parameter]
+	public EventCallback<string> OnDelta { get; set; }
+
+	[Parameter]
+	public int DeltaTime { get; set; } = 1000;
+
 	private ElementReference QuillElement;
 	private ElementReference ToolBar;
 
 	protected override async Task OnAfterRenderAsync(bool firstRender) {
 		if (firstRender) {
 			DotNetObjectReference<BlazoredTextEditor> reference = null;
-			if (OnTextChange.HasDelegate) {
+			if (OnTextChange.HasDelegate || OnDelta.HasDelegate) {
 				reference = DotNetObjectReference.Create(this);
 			}
 
@@ -72,7 +78,9 @@
 				EnableSyntaxModule,
 				EnableTooltips,
 				reference,
-				nameof(OnTextChangeCallback)
+				OnTextChange.HasDelegate ? nameof(OnTextChangeCallback) : null,
+				OnDelta.HasDelegate ? nameof(OnDeltaCallback) : null,
+				DeltaTime
 			);
 		}
 	}
@@ -108,5 +116,10 @@
 	[JSInvokable]
 	public async Task OnTextChangeCallback(TextChangeEventArgs args) {
 		await OnTextChange.InvokeAsync(args);
+	}
+
+	[JSInvokable]
+	public async Task OnDeltaCallback(string delta) {
+		await OnDelta.InvokeAsync(delta);
 	}
 }

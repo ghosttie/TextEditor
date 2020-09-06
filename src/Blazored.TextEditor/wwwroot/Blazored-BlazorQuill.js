@@ -1,6 +1,23 @@
 ﻿(function() {
 	window.QuillFunctions = {
-		createQuill: function(quillElement, toolBar, readOnly, placeholder, theme, debugLevel, historyModule, historyDelay, historyMaxStack, historyUserOnly, syntaxModule, tooltips, OnTextChangeReference, OnTextChangeMethod) {
+		createQuill: function(
+			quillElement,
+			toolBar,
+			readOnly,
+			placeholder,
+			theme,
+			debugLevel,
+			historyModule,
+			historyDelay,
+			historyMaxStack,
+			historyUserOnly,
+			syntaxModule,
+			tooltips,
+			editorReference,
+			onTextChangeMethod,
+			onDeltaMethod,
+			deltaTime
+		) {
 			Quill.register('modules/blotFormatter', QuillBlotFormatter.default);
 
 			var modules = {
@@ -31,17 +48,60 @@
 				$('[data-toggle="tooltip"]').tooltip();
 			}
 
-			if (OnTextChangeReference) {
+			if (editorReference) {
+				if (onDeltaMethod) {
+					var Delta = Quill.import('delta');
+
+					var currentChanges = new Delta();
+				}
+
 				quill.on('text-change', async function(delta, oldDelta, source) {
-					await OnTextChangeReference.invokeMethodAsync(
-						OnTextChangeMethod,
-						{
-							Delta: JSON.stringify(delta),
-							OldDelta: JSON.stringify(oldDelta),
-							Source: source
-						}
-					)
+					if (onTextChangeMethod) {
+						await editorReference.invokeMethodAsync(
+							OnTextChangeMethod,
+							{
+								Delta: JSON.stringify(delta),
+								OldDelta: JSON.stringify(oldDelta),
+								Source: source
+							}
+						);
+					}
+
+					if (onDeltaMethod) {
+						// Store accumulated changes
+						currentChanges = currentChanges.compose(delta);
+					}
 				});
+
+				if (onDeltaMethod) {
+					var saveChanges = async function() {
+						if (currentChanges.length() > 0) {
+							// stringify and clear currentChanges before await to avoid race
+							var delta = JSON.stringify(currentChanges);
+
+							currentChanges = new Delta();
+
+							await editorReference.invokeMethodAsync(onDeltaMethod, delta);
+						}
+					};
+
+					// Save periodically
+					setInterval(saveChanges, deltaTime);
+
+					// Check for unsaved data
+					window.addEventListener('beforeunload', function(e) {
+						if (currentChanges.length() > 0) {
+							e.preventDefault();
+							e.returnValue = 'Unsaved changes';
+
+							saveChanges(); // not awaiting because beforeunload won't wait
+
+							return 'Unsaved changes';
+						} else {
+							delete e['returnValue'];
+						}
+					});
+				}
 			}
 		},
 		getQuillContent: function(quillElement) {

@@ -18,8 +18,10 @@ namespace Blazored.TextEditor {
 			bool historyUserOnly,
 			bool syntaxModule,
 			bool tooltips,
-			DotNetObjectReference<BlazoredTextEditor> OnTextChangeReference,
-			string OnTextChangeMethod
+			DotNetObjectReference<BlazoredTextEditor> EditorReference,
+			string OnTextChangeMethod,
+			string OnDeltaMethod,
+			int DeltaTime
 		) {
 			return jsRuntime.InvokeAsync<object>(
 				"QuillFunctions.createQuill",
@@ -35,8 +37,10 @@ namespace Blazored.TextEditor {
 				historyUserOnly,
 				syntaxModule,
 				tooltips,
-				OnTextChangeReference,
-				OnTextChangeMethod
+				EditorReference,
+				OnTextChangeMethod,
+				OnDeltaMethod,
+				DeltaTime
 			);
 		}
 
